@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/leaderboard.css">
     <title>Piano Tiles Oyunu</title>
 </head>
 <body>
@@ -12,13 +13,20 @@
     
     <!-- Oyun başlangıç ekranı -->
     <div class="start"> 
-        <button>Oyna</button>
+        <button class="view-leaderboard">Sıralama</button>
+        <button class="play-button">Oyna</button>
+        <div class="instructions">
+            <h3>Nasıl Oynanır?</h3>
+            <p>- Siyah karelere tıklayın</p>
+            <p>- Combo yaparak daha yüksek skor kazanın!</p>
+            <p>- Kaçırdığınız her kare oyunu bitirir</p>
+        </div>
     </div> 
 
     <!-- Ana oyun alanı -->
     <div id="game" style="display: none;">
         <!-- Oyun çizgileri -->
-        <div i="game-container">
+        <div id="game-container">
             <div class="line" id="line1"></div>
             <div class="line" id="line2"></div>
             <div class="line" id="line3"></div>
@@ -27,7 +35,45 @@
         <!-- Karelerin oluşturulacağı alan -->
         <div class="tiles" id="tiles"></div> 
         <!-- Skor göstergesi -->
-        <div class="score"><p id="score">0</p></div>
+        <div class="score">
+            <p id="score">0</p>
+            <p id="high-score"></p>
+        </div>
+    </div>
+
+    <!-- Kullanıcı adı formu -->
+    <div class="username-form">
+        <h3>Kullanıcı Adınızı Girin</h3>
+        <input type="text" id="username-input" placeholder="Kullanıcı adınız" maxlength="20" required>
+        <button id="submit-score">Başla</button>
+    </div>
+
+    <!-- Liderlik tablosu -->
+    <div class="leaderboard">
+        <button class="close-button">&times;</button>
+        <h2>En Yüksek Skorlar</h2>
+        <table class="leaderboard-table">
+            <thead>
+                <tr>
+                    <th>Sıra</th>
+                    <th>İsim</th>
+                    <th>Skor</th>
+                </tr>
+            </thead>
+            <tbody id="leaderboard-body">
+                <!-- JavaScript ile doldurulacak -->
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Pause ekranı -->
+    <div class="pause-screen">
+        <div class="content">
+            <h2>DURAKLADI</h2>
+            <p>Devam etmek için ESC'ye basın</p>
+            <p>Mevcut Skor: <span id="pause-score">0</span></p>
+            <p>En Yüksek Skor: <span id="pause-high-score">0</span></p>
+        </div>
     </div>
 
     <!-- Sonuç ekranı -->
