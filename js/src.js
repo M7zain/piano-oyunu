@@ -1,6 +1,7 @@
 // Oyun Elemanları - DOM Referansları
 document.addEventListener('DOMContentLoaded', () => {
     const start = document.querySelector(".start"); // Oyunu başlat butonu
+    const difficultySelect = document.querySelector(".difficulty-select"); // Zorluk seçim ekranı
     const game = document.querySelector("#game"); // Ana oyun konteyneri
     const sco = document.getElementById("score"); // Skor göstergesi
     const audio = document.getElementById("audio"); // Arka plan müziği
@@ -15,6 +16,49 @@ document.addEventListener('DOMContentLoaded', () => {
     const saveScoreBtn = document.getElementById("save_score"); // Skor kaydet butonu
     const topScoresList = document.querySelector(".top-scores-list"); // Top scores listesi
 
+    // Müzik elementleri
+    const easyMusic = document.getElementById("easyMusic");
+    const normalMusic = document.getElementById("normalMusic");
+    const hardMusic = document.getElementById("hardMusic");
+    let currentMusic = null;
+
+    // Zorluk seviyeleri ayarları
+    const difficultySettings = {
+        easy: {
+            initialSpeed: 500,
+            music: easyMusic,
+            speedLevels: {
+                1: { score: 50, speed: 400, timeout: 2000 },
+                2: { score: 100, speed: 350, timeout: 1800 },
+                3: { score: 200, speed: 300, timeout: 1600 },
+                4: { score: 400, speed: 250, timeout: 1400 }
+            }
+        },
+        normal: {
+            initialSpeed: 400,
+            music: normalMusic,
+            speedLevels: {
+                1: { score: 70, speed: 300, timeout: 1600 },
+                2: { score: 150, speed: 250, timeout: 1600 },
+                3: { score: 400, speed: 200, timeout: 1200 },
+                4: { score: 800, speed: 160, timeout: 1000 }
+            }
+        },
+        hard: {
+            initialSpeed: 300,
+            music: hardMusic,
+            speedLevels: {
+                1: { score: 50, speed: 250, timeout: 1400 },
+                2: { score: 100, speed: 200, timeout: 1200 },
+                3: { score: 200, speed: 150, timeout: 1000 },
+                4: { score: 400, speed: 120, timeout: 800 }
+            }
+        }
+    };
+
+    let currentDifficulty = null;
+    let currentSettings = null;
+
     // Oyun Durum Değişkenleri
     let a; // Kare oluşturma için interval referansı
     let tos = 2400; // Kare kaldırma zaman aşımı (milisaniye)
@@ -24,6 +68,60 @@ document.addEventListener('DOMContentLoaded', () => {
     var step = 0; // Mevcut hız seviyesi
     var mar = randomMargin(), mar2; // Kareler için kenar boşluğu pozisyonları
     var hasSubmittedScore = false; // Skor gönderildi mi?
+
+    // Oyna butonuna tıklandığında zorluk seçim ekranını göster
+    start.querySelector("button").onclick = () => {
+        start.style.display = "none";
+        difficultySelect.style.display = "flex";
+        document.querySelector(".dpuLogo").style.display = "none";
+    };
+
+    // Geri butonuna tıklandığında ana menüye dön
+    document.querySelector(".back-btn").onclick = () => {
+        difficultySelect.style.display = "none";
+        start.style.display = "block";
+        document.querySelector(".dpuLogo").style.display = "block";
+    };
+
+    // Arka plan müziğini başlat ve döngüye al
+    function startBackgroundMusic(music) {
+        // Önceki müziği durdur
+        if (currentMusic) {
+            currentMusic.pause();
+            currentMusic.currentTime = 0;
+        }
+        
+        // Yeni müziği ayarla ve başlat
+        currentMusic = music;
+        currentMusic.loop = true;
+        currentMusic.volume = 0.5;
+        currentMusic.play().catch(error => {
+            console.log("Music autoplay prevented:", error);
+        });
+    }
+
+    // Zorluk seviyesi seçildiğinde oyunu başlat
+    document.querySelectorAll(".difficulty-btn").forEach(btn => {
+        btn.onclick = () => {
+            const difficulty = btn.classList.contains("easy") ? "easy" : 
+                             btn.classList.contains("normal") ? "normal" : "hard";
+            
+            currentDifficulty = difficulty;
+            currentSettings = difficultySettings[difficulty];
+            
+            difficultySelect.style.display = "none";
+            game.style.display = "block";
+            
+            // Oyunu başlat
+            ply.play();
+            score = 0;
+            sco.innerText = score;
+            speed(currentSettings.initialSpeed);
+            
+            // Zorluk seviyesine göre müziği başlat
+            startBackgroundMusic(currentSettings.music);
+        };
+    });
 
     // Liderlik tablosunu yükle
     async function loadLeaderboard() {
@@ -105,26 +203,30 @@ document.addEventListener('DOMContentLoaded', () => {
         };
     }
 
+    // Oyun bitişini yönet
+    function outs(){
+        if (currentMusic) {
+            currentMusic.pause();
+            currentMusic.currentTime = 0;
+        }
+        out.play();
+        setTimeout(viewResult, 1000);
+    }
+
     // Yeniden başlatıldığında oyun durumunu sıfırla
     if (restart) {
         restart.onclick = ()=>{
             if (start) start.style.display = "block";
             if (result_box) result_box.classList.remove("activeResult");
             if (sco) sco.innerText = 0;
-            if (audio) audio.currentTime = 0;
+            if (currentMusic) {
+                currentMusic.pause();
+                currentMusic.currentTime = 0;
+            }
             score = 0;
             hasSubmittedScore = false;
         }
     }
-
-    // Arka plan müziğini başlat ve döngüye al
-    function startAudio(){
-        audio.play();
-    }
-    audio.addEventListener("ended", () => {
-        audio.currentTime = 0;
-        audio.play();
-    });
 
     // Kare oluşturma hızını ayarla
     function speed(e){
@@ -134,13 +236,6 @@ document.addEventListener('DOMContentLoaded', () => {
     // Hız seviyesi bayraklarını sıfırla
     function reset(){
         bool1 = bool2 = bool3 = bool4 = true;
-    }
-
-    // Oyun bitişini yönet
-    function outs(){
-        audio.pause();
-        out.play();
-        setTimeout(viewResult, 1000);
     }
 
     // Yeni kare oluştur ve ekle
@@ -176,48 +271,47 @@ document.addEventListener('DOMContentLoaded', () => {
     function moveDown(e){
         e.classList.add("move");
         
-        // Hız seviyesi 1 (70-149 puan)
-        if(step == 1){
+        const settings = currentSettings.speedLevels;
+        
+        // Zorluk seviyesine göre hız ayarları
+        if(score >= settings[1].score && score < settings[2].score){
             e.classList.add("speedX1");
-            if(bool1 == true){
+            if(bool1){
                 clearInterval(a);
-                speed(300);
+                speed(settings[1].speed);
                 reset();
                 bool1 = false;
-                tos = 1600;
+                tos = settings[1].timeout;
             }
         } 
-        // Hız seviyesi 2 (150-399 puan)
-        else if(step == 2){
+        else if(score >= settings[2].score && score < settings[3].score){
             e.classList.add("speedX2");
-            if(bool2 == true){
+            if(bool2){
                 clearInterval(a);
-                speed(250);
+                speed(settings[2].speed);
                 reset();
                 bool2 = false;
-                tos = 1600;
+                tos = settings[2].timeout;
             }
         }
-        // Hız seviyesi 3 (400-799 puan)
-        else if(step == 3){
+        else if(score >= settings[3].score && score < settings[4].score){
             e.classList.add("speedX3");
-            if(bool3 == true){
+            if(bool3){
                 clearInterval(a);
-                speed(200);
+                speed(settings[3].speed);
                 reset();
                 bool3 = false;
-                tos = 1200;
+                tos = settings[3].timeout;
             }
         } 
-        // Hız seviyesi 4 (800+ puan)
-        else if(step == 4){
+        else if(score >= settings[4].score){
             e.classList.add("speedX4");
-            if(bool4 == true){
+            if(bool4){
                 clearInterval(a);
-                speed(160);
+                speed(settings[4].speed);
                 reset();
                 bool4 = false;
-                tos = 1000;
+                tos = settings[4].timeout;
             }
         }
         setTimeout(removeDiv, tos, e)
@@ -237,16 +331,5 @@ document.addEventListener('DOMContentLoaded', () => {
             outs();
         }
         e.remove()
-    }
-
-    // Oyun başlat butonuna tıklandığında oyunu başlat
-    start.querySelector("button").onclick = ()=>{
-        ply.play();
-        game.style.display = "block";
-        start.style.display = "none";
-        document.querySelector(".dpuLogo").style.display = "none"; // Hide DPU logo
-        score = 0;
-        speed(400);
-        setTimeout(startAudio, 1000);
     }
 });
