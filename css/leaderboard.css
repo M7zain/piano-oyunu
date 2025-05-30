@@ -6,7 +6,14 @@
     flex-direction: column;
     align-items: center;
     color: #fff;
+    overflow-y: auto;
     overflow-x: hidden;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    -webkit-overflow-scrolling: touch;
 }
 
 .leaderboard-page h1 {
@@ -149,6 +156,10 @@
     background: rgba(255, 255, 255, 0.1);
     border-radius: 15px;
     backdrop-filter: blur(5px);
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
 }
 
 .all-scores h2 {
@@ -158,8 +169,12 @@
 }
 
 .scores-list {
-    max-height: 400px;
+    flex: 1;
     overflow-y: auto;
+    min-height: 0;
+    padding-bottom: 80px; /* Space for home button */
+    -webkit-overflow-scrolling: touch;
+    scroll-behavior: smooth;
 }
 
 .score-item {
@@ -225,151 +240,23 @@
 /* Mobile Responsive Styles for Home Button */
 @media (max-width: 768px) {
     .all-scores {
-        margin-bottom: 20px;
-    }
-
-    .home-button {
-        padding: 12px 24px;
-        font-size: 1rem;
-        min-width: 180px;
-        margin: 20px auto;
-    }
-}
-
-@media (max-width: 480px) {
-    .all-scores {
-        margin-bottom: 15px;
-    }
-
-    .home-button {
-        padding: 10px 20px;
-        font-size: 0.95rem;
-        min-width: 160px;
+        width: 95%;
         margin: 15px auto;
-        border-radius: 20px;
-    }
-}
-
-/* Very small screens */
-@media (max-width: 360px) {
-    .all-scores {
-        margin-bottom: 12px;
-    }
-
-    .home-button {
-        padding: 8px 16px;
-        font-size: 0.9rem;
-        min-width: 140px;
-        margin: 12px auto;
-    }
-}
-
-/* Ensure button is visible on shorter screens */
-@media (max-height: 600px) {
-    .all-scores {
-        margin-bottom: 10px;
-    }
-
-    .home-button {
-        padding: 8px 16px;
-        margin: 10px auto;
-    }
-}
-
-/* Enhanced Mobile Responsive Styles */
-@media (max-width: 768px) {
-    .leaderboard-page {
         padding: 15px 10px;
-        min-height: calc(100vh - 30px);
-    }
-
-    .leaderboard-page h1 {
-        font-size: 1.8rem;
-        margin: 15px 0;
-    }
-
-    .top-three {
-        width: 95%;
-        margin: 10px auto;
-    }
-
-    .podium {
-        height: 220px;
-        gap: 5px;
-    }
-
-    .podium-item {
-        padding: 8px 6px;
-        width: 85px;
-    }
-
-    .podium-item.first {
-        padding: 10px 8px;
-    }
-
-    .podium-item.second {
-        padding: 8px 6px;
-    }
-
-    .podium-item.third {
-        padding: 8px 6px;
-    }
-
-    .podium-item .player-info {
-        gap: 2px;
-    }
-
-    .podium-item .rank {
-        margin-bottom: 6px;
-        gap: 1px;
-    }
-
-    .podium-item .rank-number {
-        font-size: 1.4rem;
-    }
-    
-    .podium-item .rank-emoji {
-        font-size: 1.4rem;
-    }
-    
-    .podium-item.first .rank-emoji {
-        font-size: 1.8rem;
-    }
-    
-    .podium-item.second .rank-emoji {
-        font-size: 1.6rem;
-    }
-    
-    .podium-item.third .rank-emoji {
-        font-size: 1.4rem;
-    }
-
-    .podium-item .player-name {
-        font-size: 0.9rem;
-        margin-bottom: 3px;
-        word-break: break-word;
-        max-width: 100%;
-        overflow: hidden;
-        text-overflow: ellipsis;
-    }
-
-    .podium-item .player-score {
-        font-size: 1.1rem;
-    }
-
-    .all-scores {
-        width: 95%;
-        margin: 15px auto;
         border-radius: 12px;
-    }
-
-    .all-scores h2 {
-        font-size: 1.4rem;
-        margin-bottom: 15px;
+        max-height: calc(100vh - 400px);
+        overflow-y: auto;
     }
 
     .scores-list {
-        max-height: 40vh;
+        max-height: none;
+        height: auto;
+    }
+
+    .score-item {
+        padding: 10px 15px;
+        margin: 6px 0;
+        font-size: 0.95rem;
     }
 
     .home-button {
@@ -463,24 +350,31 @@
         font-size: 0.9rem;
     }
 
-    .score-item {
-        padding: 8px 10px;
-        margin: 4px 0;
-        border-radius: 6px;
-    }
-
-    .score-item .rank {
-        width: 30px;
-    }
-
     .all-scores {
         width: 98%;
         padding: 12px 8px;
         margin: 10px auto;
+        max-height: calc(100vh - 350px);
     }
 
-    .scores-list {
-        max-height: 35vh;
+    .score-item {
+        padding: 8px 12px;
+        margin: 4px 0;
+        font-size: 0.9rem;
+    }
+
+    .score-item .rank {
+        width: 25px;
+        font-size: 0.9rem;
+    }
+
+    .score-item .player-name {
+        margin: 0 10px;
+        font-size: 0.9rem;
+    }
+
+    .score-item .player-score {
+        font-size: 0.9rem;
     }
 
     .home-button {
@@ -505,8 +399,15 @@
     }
 }
 
-/* Safe area adjustments for modern mobile devices */
+/* Safe area insets for modern mobile devices */
 @supports (padding: max(0px)) {
+    .leaderboard-page {
+        padding-top: max(20px, env(safe-area-inset-top));
+        padding-bottom: max(20px, env(safe-area-inset-bottom));
+        padding-left: max(20px, env(safe-area-inset-left));
+        padding-right: max(20px, env(safe-area-inset-right));
+    }
+
     .home-button {
         padding-bottom: max(10px, env(safe-area-inset-bottom));
         bottom: max(15px, env(safe-area-inset-bottom));
@@ -586,4 +487,24 @@
     backface-visibility: hidden;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+}
+
+/* Enhance scrollbar styling */
+.scores-list::-webkit-scrollbar {
+    width: 6px;
+}
+
+.scores-list::-webkit-scrollbar-track {
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 6px;
+}
+
+.scores-list::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.3);
+    border-radius: 6px;
+    transition: background 0.3s ease;
+}
+
+.scores-list::-webkit-scrollbar-thumb:hover {
+    background: rgba(255, 255, 255, 0.5);
 } 
